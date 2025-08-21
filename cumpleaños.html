@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Cumpleaños Camila!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6b9d, #ffc6db, #ffb3e6, #c44569);
+            background-size: 400% 400%;
+            animation: gradientAnimation 3s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            position: relative;
+        }
+
+        h1 {
+            color: #c44569;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container {
+            margin: 30px 0;
+        }
+
+        input {
+            padding: 15px 20px;
+            font-size: 18px;
+            border: 3px solid #ff6b9d;
+            border-radius: 25px;
+            outline: none;
+            width: 250px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #c44569;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+            transform: scale(1.05);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .birthday-message {
+            position: fixed;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            z-index: 50;
+            white-space: nowrap;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff6b9d;
+            animation: confettiFall 3s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes rainFall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .cake {
+            font-size: 60px;
+            margin: 20px 0;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .instruction {
+            color: #666;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .celebration-active {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <h1> Feliz cumpleaños!!! </h1>
+        <div class="cake"></div>
+        <div class="input-container">
+            <button onclick="startCelebration()">Presiona Aquí</button>
+        </div>
+        <p class="instruction">Presiona el botón</p>
+    </div>
+
+    <script>
+        let celebrationActive = false;
+        let messageInterval;
+        let confettiInterval;
+
+        const birthdayMessages = [
+            "Feliz Cumpleaños Cami",
+            "Pasala bien",
+            "Ya eres legal",
+            "Un año mas cerca de morir",
+            "Saca la trago",
+            "Vieja",
+            "Feliz cumpleaños a ti",
+            "Que los cumplas feliz",
+            "Feliz cumpleaños te desea baratin",
+            "Y la torta?",
+            "verdaderamente, te deseo feliz cumpleaños",
+            "Viejaaaaaaa    "
+        ];
+
+        const colors = ['#ff6b9d', '#ffc6db', '#ffb3e6', '#c44569', '#ff9ff3', '#f368e0'];
+
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function createFloatingMessage() {
+            const message = document.createElement('div');
+            message.className = 'birthday-message';
+            message.textContent = birthdayMessages[Math.floor(Math.random() * birthdayMessages.length)];
+            message.style.color = getRandomColor();
+            message.style.left = Math.random() * (window.innerWidth - 300) + 'px';
+            message.style.fontSize = (Math.random() * 15 + 18) + 'px';
+            
+            const duration = Math.random() * 3 + 5; // 5-8 seconds for slower fall
+            message.style.animation = `rainFall ${duration}s linear forwards`;
+            
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.parentNode.removeChild(message);
+                }
+            }, duration * 1000);
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.backgroundColor = getRandomColor();
+            confetti.style.animationDelay = Math.random() * 2 + 's';
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                if (confetti.parentNode) {
+                    confetti.parentNode.removeChild(confetti);
+                }
+            }, 3000);
+        }
+
+        function startCelebration() {
+            if (celebrationActive) {
+                stopCelebration();
+                return;
+            }
+            
+            celebrationActive = true;
+            document.getElementById('container').classList.add('celebration-active');
+            
+            document.querySelector('h1').textContent = `Un año mas cerca de morir <3`;
+            document.querySelector('.instruction').textContent = 'te queria decir algo antes que salgas, feliz cumpleaños';
+            
+            // Crear mensajes de lluvia cada 500ms para que sea más pausado
+            messageInterval = setInterval(createFloatingMessage, 500);
+            
+            // Crear confetti cada 400ms
+            confettiInterval = setInterval(createConfetti, 400);
+            
+            // Cambiar el botón
+            document.querySelector('button').textContent = 'Presiona cuando te artes de que te felicite ';
+        }
+
+        function stopCelebration() {
+            celebrationActive = false;
+            document.getElementById('container').classList.remove('celebration-active');
+            
+            clearInterval(messageInterval);
+            clearInterval(confettiInterval);
+            
+            // Limpiar mensajes existentes
+            const messages = document.querySelectorAll('.birthday-message');
+            messages.forEach(message => message.remove());
+            
+            const confetti = document.querySelectorAll('.confetti');
+            confetti.forEach(piece => piece.remove());
+            
+            // Restaurar botón
+            document.querySelector('button').textContent = '¡Felicitar a Camila!';
+            
+            // Restaurar textos originales
+            document.querySelector('h1').textContent = '🎉 ¡Página Especial de Cumpleaños! 🎉';
+            document.querySelector('.instruction').textContent = 'Presiona el botón para comenzar la lluvia de felicitaciones 🎈';
+        }
+
+        // Limpiar cuando se cambie la ventana
+        window.addEventListener('beforeunload', stopCelebration);
+    </script>
+</body>
+</html>
